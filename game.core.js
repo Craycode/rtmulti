@@ -906,7 +906,7 @@ game_core.prototype.client_create_ping_timer = function() {
 
 	setInterval(function() {
 
-		this.last_ping_time = new Date().getTime() - this.fake_lag;
+		this.last_ping_time = new Date().getTime();
 		this.socket.send('p.' + (this.last_ping_time));
 
 	}.bind(this), 1000);
@@ -928,8 +928,6 @@ game_core.prototype.client_create_configuration = function() {
 	this.net_latency = 0.001;           //the latency between the client and the server (ping/2)
 	this.net_ping = 0.001;              //The round trip time from here to the server,and back
 	this.last_ping_time = 0.001;        //The time we last sent a ping
-	this.fake_lag = 0;                //If we are simulating lag, this applies only to the input client (not others)
-	this.fake_lag_time = 0;
 
 	this.net_offset = 100;              //100 ms latency between server and client interpolation for other clients
 	this.buffer_size = 2;               //The size of the server history to keep for rewinding/interpolating.
@@ -988,12 +986,6 @@ game_core.prototype.client_create_debug_gui = function() {
 	var _consettings = this.gui.addFolder('Connection');
 	_consettings.add(this, 'net_latency').step(0.001).listen();
 	_consettings.add(this, 'net_ping').step(0.001).listen();
-
-	//When adding fake lag, we need to tell the server about it.
-	var lag_control = _consettings.add(this, 'fake_lag').step(0.001).listen();
-	lag_control.onChange(function(value) {
-		this.socket.send('l.' + value);
-	}.bind(this));
 
 	_consettings.open();
 
@@ -1228,7 +1220,6 @@ game_core.prototype.client_draw_info = function() {
 		this.ctx.fillText('client_time : delayed game time on client for other players only (includes the net_offset)', 10, 90);
 		this.ctx.fillText('net_latency : Time from you to the server. ', 10, 130);
 		this.ctx.fillText('net_ping : Time from you to the server and back. ', 10, 150);
-		this.ctx.fillText('fake_lag : Add fake ping/lag for testing, applies only to your inputs (watch server_pos block!). ', 10, 170);
 		this.ctx.fillText('client_smoothing/client_smooth : When updating players information from the server, it can smooth them out.', 10, 210);
 		this.ctx.fillText(' This only applies to other clients when prediction is enabled, and applies to local player with no prediction.', 170, 230);
 

@@ -25,7 +25,6 @@ game_server.log = function() {
 		console.log.apply(this, arguments);
 };
 
-game_server.fake_latency = 0;
 game_server.local_time = 0;
 game_server._dt = new Date().getTime();
 game_server._dte = new Date().getTime();
@@ -39,22 +38,7 @@ setInterval(function() {
 }, 4);
 
 game_server.onMessage = function(client, message) {
-
-	if (this.fake_latency && message.split('.')[0].substr(0, 1) == 'i') {
-
-		//store all input message
-		game_server.messages.push({client: client, message: message});
-
-		setTimeout(function() {
-			if (game_server.messages.length) {
-				game_server._onMessage(game_server.messages[0].client, game_server.messages[0].message);
-				game_server.messages.splice(0, 1);
-			}
-		}.bind(this), this.fake_latency);
-
-	} else {
-		game_server._onMessage(client, message);
-	}
+	game_server._onMessage(client, message);
 };
 
 game_server._onMessage = function(client, message) {
@@ -76,8 +60,6 @@ game_server._onMessage = function(client, message) {
 	} else if (message_type == 'c') {    //Client changed their color!
 		if (other_client)
 			other_client.send('s.c.' + message_parts[1]);
-	} else if (message_type == 'l') {    //A client is asking for lag simulation
-		this.fake_latency = parseFloat(message_parts[1]);
 	}
 
 }; //game_server.onMessage
