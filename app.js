@@ -35,7 +35,6 @@ app.get('/', function(req, res) {
 	res.sendfile('index.html', {root: __dirname});
 });
 
-
 //This handler will listen for requests on /*, any file from the root of our server.
 //See expressjs documentation for more info on routing.
 
@@ -52,7 +51,6 @@ app.get('/*', function(req, res, next) {
 	res.sendfile(file, {root: __dirname});
 
 }); //app.get *
-
 
 /* Socket.IO server set up. */
 
@@ -100,13 +98,10 @@ sio.sockets.on('connection', function(client) {
 	//Useful to know when someone connects
 	console.log('\t socket.io:: player ' + client.userid + ' connected');
 
-
 	//Now we want to handle some of the messages that clients will send.
 	//They send messages here, and we send them to the game_server to handle.
 	client.on('message', function(m) {
-
 		game_server.onMessage(client, m);
-
 	}); //client.on message
 
 	//When this client disconnects, we want to tell the game server
